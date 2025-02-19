@@ -1,6 +1,5 @@
-﻿// Program.cs
+// Program.cs
 using System;
-using System.Numerics;
 
 namespace AdventureGame
 {
@@ -13,7 +12,8 @@ namespace AdventureGame
             string playerName = Console.ReadLine();
 
             Player player = new Player(playerName, 100, 10, 5);
-            Game game = new Game(player);
+            Bear bear = new Bear(50, 15, 3); // Bear with 50 health, 15 strength, and 3 luck
+            Game game = new Game(player, bear);
             game.Start();
         }
     }
