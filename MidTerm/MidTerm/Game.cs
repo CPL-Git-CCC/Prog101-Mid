@@ -1,4 +1,4 @@
-﻿// Game.cs
+// Game.cs
 using System;
 
 namespace AdventureGame
@@ -6,13 +6,15 @@ namespace AdventureGame
     public class Game
     {
         private Player _player;
+        private Bear _bear;
         private Random _random;
         private bool _gameOver;
         private bool _victory;
 
-        public Game(Player player)
+        public Game(Player player, Bear bear)
         {
             _player = player;
+            _bear = bear;
             _random = new Random();
             _gameOver = false;
             _victory = false;
@@ -22,6 +24,7 @@ namespace AdventureGame
         {
             Console.WriteLine($"\nWelcome, {_player.Name}! Your adventure begins...");
             _player.DisplayStats();
+            _bear.DisplayStats();
 
             while (!_gameOver && !_victory)
             {
@@ -84,24 +87,28 @@ namespace AdventureGame
         private void FightBear()
         {
             Console.WriteLine("\nYou decide to fight the bear!");
-            int bearStrength = _random.Next(5, 15);
+            int playerDamage = _player.Strength;
+            int bearDamage = _bear.Strength;
 
-            if (_player.Strength > bearStrength)
+            Console.WriteLine($"You attack the bear and deal {playerDamage} damage!");
+            _bear.Health -= playerDamage;
+
+            if (_bear.Health > 0)
             {
-                Console.WriteLine("You defeat the bear with your strength!");
-                Console.WriteLine("You have saved the forest and become a hero!");
-                _victory = true;
-            }
-            else
-            {
-                Console.WriteLine("The bear overpowers you and you lose 30 health.");
-                _player.Health -= 30;
+                Console.WriteLine($"The bear attacks you and deals {bearDamage} damage!");
+                _player.Health -= bearDamage;
                 _player.DisplayStats();
+                _bear.DisplayStats();
 
                 if (_player.Health <= 0)
                 {
                     _gameOver = true;
                 }
+            }
+            else
+            {
+                Console.WriteLine("You have defeated the bear!");
+                _victory = true;
             }
         }
 
