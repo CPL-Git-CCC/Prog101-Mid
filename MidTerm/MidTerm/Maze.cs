@@ -57,8 +57,8 @@ namespace AdventureGame
         {
             while (true)
             {
-                Console.WriteLine($"\nYou are at position ({_playerX}, {_playerY}).");
-                Console.WriteLine("Where would you like to move?");
+                DisplayMaze();
+                Console.WriteLine("\nWhere would you like to move?");
                 Console.WriteLine("1. Up");
                 Console.WriteLine("2. Down");
                 Console.WriteLine("3. Left");
@@ -76,6 +76,34 @@ namespace AdventureGame
 
                 MoveBear(); // Bear moves after the player (hidden from the player)
                 CheckForEvents();
+            }
+        }
+
+        private void DisplayMaze()
+        {
+            Console.WriteLine("\nMaze Layout:");
+            for (int y = 0; y < GridSize; y++)
+            {
+                for (int x = 0; x < GridSize; x++)
+                {
+                    if (x == _playerX && y == _playerY)
+                    {
+                        Console.Write("P "); // Player
+                    }
+                    else if (x == _bearX && y == _bearY)
+                    {
+                        Console.Write("B "); // Bear
+                    }
+                    else if (_chestPositions.Contains((x, y)))
+                    {
+                        Console.Write("T "); // Treasure Chest
+                    }
+                    else
+                    {
+                        Console.Write(". "); // Empty space
+                    }
+                }
+                Console.WriteLine();
             }
         }
 
