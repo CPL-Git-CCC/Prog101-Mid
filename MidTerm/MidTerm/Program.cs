@@ -12,7 +12,7 @@ namespace AdventureGame
             string playerName = Console.ReadLine();
 
             Player player = new Player(playerName, 100, 10, 5);
-            Bear bear = new Bear(50, 15, 3); // Bear with 50 health, 15 strength, and 3 luck
+            Bear bear = new Bear(100, 10, 5);
             Game game = new Game(player, bear);
             game.Start();
         }

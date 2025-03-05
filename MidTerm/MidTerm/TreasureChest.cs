@@ -15,51 +15,68 @@ namespace AdventureGame
         public void Open(Player player)
         {
             Console.WriteLine("\nYou open the chest...");
+            ApplyRewardOrPenalty(player);
+        }
 
+        public void Open(Bear bear)
+        {
+            Console.WriteLine("\nThe bear opens the chest...");
+            ApplyRewardOrPenalty(bear);
+        }
+
+        private void ApplyRewardOrPenalty(dynamic character)
+        {
             // Randomly determine the type of reward or penalty
             int outcomeType = _random.Next(6); // 0-2: Positive, 3-5: Negative
-            int value = _random.Next(10, 31); // Random value between 10 and 30
+            int value = _random.Next(1, 6); // Random value between 1 and 5
 
             switch (outcomeType)
             {
                 case 0: // Increase health
-                    player.Health += value;
-                    Console.WriteLine($"You find a healing potion and gain {value} health!");
+                    character.Health += value;
+                    Console.WriteLine($"{character.GetType().Name} gains {value} health!");
                     break;
                 case 1: // Increase strength
-                    player.Strength += value;
-                    Console.WriteLine($"You find a strength elixir and gain {value} strength!");
+                    character.Strength += value;
+                    Console.WriteLine($"{character.GetType().Name} gains {value} strength!");
                     break;
                 case 2: // Increase luck
-                    player.Luck += value;
-                    Console.WriteLine($"You find a lucky charm and gain {value} luck!");
+                    character.Luck += value;
+                    Console.WriteLine($"{character.GetType().Name} gains {value} luck!");
                     break;
                 case 3: // Decrease health
-                    player.Health -= value;
-                    Console.WriteLine($"You trigger a trap and lose {value} health!");
+                    character.Health -= value;
+                    Console.WriteLine($"{character.GetType().Name} loses {value} health!");
                     break;
                 case 4: // Decrease strength
-                    player.Strength -= value;
-                    Console.WriteLine($"You consume a cursed potion and lose {value} strength!");
+                    character.Strength -= value;
+                    Console.WriteLine($"{character.GetType().Name} loses {value} strength!");
                     break;
                 case 5: // Decrease luck
-                    player.Luck -= value;
-                    Console.WriteLine($"You are cursed and lose {value} luck!");
+                    character.Luck -= value;
+                    Console.WriteLine($"{character.GetType().Name} loses {value} luck!");
                     break;
             }
 
             // Ensure stats don't go below 0
-            if (player.Health < 0) player.Health = 0;
-            if (player.Strength < 0) player.Strength = 0;
-            if (player.Luck < 0) player.Luck = 0;
+            if (character.Health < 0) character.Health = 0;
+            if (character.Strength < 0) character.Strength = 0;
+            if (character.Luck < 0) character.Luck = 0;
 
-            player.DisplayStats();
+            character.DisplayStats();
 
-            // Check if the player has been defeated by a health penalty
-            if (player.Health <= 0)
+            // Check if the character has been defeated by a health penalty
+            if (character.Health <= 0)
             {
-                Console.WriteLine("You have been defeated by the trap. Game over.");
-                Environment.Exit(0);
+                if (character is Player)
+                {
+                    Console.WriteLine("You have been defeated by the trap. Game over.");
+                    Environment.Exit(0);
+                }
+                else if (character is Bear)
+                {
+                    Console.WriteLine("The bear has been defeated by the trap!");
+                }
             }
         }
     }

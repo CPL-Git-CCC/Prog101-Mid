@@ -33,24 +33,29 @@ namespace AdventureGame
                 _bearY = _random.Next(GridSize);
             } while (_bearX == _playerX && _bearY == _playerY); // Ensure bear is not at player's position
 
-            // Randomly generate the number of treasure chests (between 3 and 7)
-            int numberOfChests = _random.Next(3, 8);
+            // Randomly generate the number of treasure chests (between 1 and 5)
+            int numberOfChests = _random.Next(1, 6);
 
             // Initialize treasure chests
             for (int i = 0; i < numberOfChests; i++)
             {
-                int chestX, chestY;
-                do
-                {
-                    chestX = _random.Next(GridSize);
-                    chestY = _random.Next(GridSize);
-                } while ((chestX == _playerX && chestY == _playerY) || (chestX == _bearX && chestY == _bearY) || _chestPositions.Contains((chestX, chestY))); // Ensure chest is not at player's, bear's, or another chest's position
-
-                _chestPositions.Add((chestX, chestY));
-                _treasureChests.Add(new TreasureChest());
+                AddNewChest();
             }
 
             Console.WriteLine($"There are {numberOfChests} treasure chests hidden in the maze!");
+        }
+
+        private void AddNewChest()
+        {
+            int chestX, chestY;
+            do
+            {
+                chestX = _random.Next(GridSize);
+                chestY = _random.Next(GridSize);
+            } while ((chestX == _playerX && chestY == _playerY) || (chestX == _bearX && chestY == _bearY) || _chestPositions.Contains((chestX, chestY))); // Ensure chest is not at player's, bear's, or another chest's position
+
+            _chestPositions.Add((chestX, chestY));
+            _treasureChests.Add(new TreasureChest());
         }
 
         public void Explore()
@@ -58,25 +63,44 @@ namespace AdventureGame
             while (true)
             {
                 DisplayMaze();
-                Console.WriteLine("\nWhere would you like to move?");
-                Console.WriteLine("1. Up");
-                Console.WriteLine("2. Down");
-                Console.WriteLine("3. Left");
-                Console.WriteLine("4. Right");
+                Console.WriteLine("\nUse WASD or Arrow Keys to move.");
 
-                int choice = GetChoice(4);
+                ConsoleKeyInfo keyInfo = Console.ReadKey(true); // Read key input without displaying it
+                HandleMovement(keyInfo);
 
-                switch (choice)
-                {
-                    case 1: MovePlayer(0, -1); break; // Up
-                    case 2: MovePlayer(0, 1); break;  // Down
-                    case 3: MovePlayer(-1, 0); break; // Left
-                    case 4: MovePlayer(1, 0); break;  // Right
-                }
-
-                MoveBear(); // Bear moves after the player (hidden from the player)
+                MoveBear(); // Bear moves after the player
                 CheckForEvents();
             }
+        }
+
+        private void HandleMovement(ConsoleKeyInfo keyInfo)
+        {
+            int deltaX = 0, deltaY = 0;
+
+            switch (keyInfo.Key)
+            {
+                case ConsoleKey.W:        // W key
+                case ConsoleKey.UpArrow:  // Up arrow
+                    deltaY = -1;
+                    break;
+                case ConsoleKey.S:        // S key
+                case ConsoleKey.DownArrow:// Down arrow
+                    deltaY = 1;
+                    break;
+                case ConsoleKey.A:        // A key
+                case ConsoleKey.LeftArrow:// Left arrow
+                    deltaX = -1;
+                    break;
+                case ConsoleKey.D:        // D key
+                case ConsoleKey.RightArrow:// Right arrow
+                    deltaX = 1;
+                    break;
+                default:
+                    Console.WriteLine("Invalid key. Use WASD or Arrow Keys to move.");
+                    return;
+            }
+
+            MovePlayer(deltaX, deltaY);
         }
 
         private void DisplayMaze()
@@ -145,6 +169,25 @@ namespace AdventureGame
             {
                 _bearX = newBearX;
                 _bearY = newBearY;
+                Console.WriteLine($"The bear moves to position ({_bearX}, {_bearY}).");
+
+                // Check if the bear lands on a treasure chest
+                CheckForBearChestInteraction();
+            }
+        }
+
+        private void CheckForBearChestInteraction()
+        {
+            for (int i = 0; i < _chestPositions.Count; i++)
+            {
+                if (_bearX == _chestPositions[i].Item1 && _bearY == _chestPositions[i].Item2)
+                {
+                    _treasureChests[i].Open(_bear);
+                    _chestPositions.RemoveAt(i); // Remove the chest after it's opened
+                    _treasureChests.RemoveAt(i);
+                    AddNewChest(); // Add a new chest to the map
+                    break;
+                }
             }
         }
 
@@ -249,6 +292,7 @@ namespace AdventureGame
                         _treasureChests[i].Open(_player);
                         _chestPositions.RemoveAt(i); // Remove the chest after it's opened
                         _treasureChests.RemoveAt(i);
+                        AddNewChest(); // Add a new chest to the map
                         break;
                     }
                     else
