@@ -26,36 +26,54 @@ namespace AdventureGame
 
         private void ApplyRewardOrPenalty(dynamic character)
         {
-            // Randomly determine the type of reward or penalty
-            int outcomeType = _random.Next(6); // 0-2: Positive, 3-5: Negative
+            // Determine the chance of getting a boost based on Luck (0-10)
+            int luckChance = character.Luck * 10; // Luck ranges from 0 to 10, so luckChance ranges from 0% to 100%
+            int outcomeType = _random.Next(100); // Random number between 0 and 99
+
+            // If outcomeType is less than luckChance, it's a positive outcome (boost)
+            bool isBoost = outcomeType < luckChance;
+
             int value = _random.Next(1, 6); // Random value between 1 and 5
 
-            switch (outcomeType)
+            if (isBoost)
             {
-                case 0: // Increase health
-                    character.Health += value;
-                    Console.WriteLine($"{character.GetType().Name} gains {value} health!");
-                    break;
-                case 1: // Increase strength
-                    character.Strength += value;
-                    Console.WriteLine($"{character.GetType().Name} gains {value} strength!");
-                    break;
-                case 2: // Increase luck
-                    character.Luck += value;
-                    Console.WriteLine($"{character.GetType().Name} gains {value} luck!");
-                    break;
-                case 3: // Decrease health
-                    character.Health -= value;
-                    Console.WriteLine($"{character.GetType().Name} loses {value} health!");
-                    break;
-                case 4: // Decrease strength
-                    character.Strength -= value;
-                    Console.WriteLine($"{character.GetType().Name} loses {value} strength!");
-                    break;
-                case 5: // Decrease luck
-                    character.Luck -= value;
-                    Console.WriteLine($"{character.GetType().Name} loses {value} luck!");
-                    break;
+                // Positive outcomes (boost)
+                int boostType = _random.Next(3); // 0: Health, 1: Strength, 2: Luck
+                switch (boostType)
+                {
+                    case 0: // Increase health
+                        character.Health += value;
+                        Console.WriteLine($"{character.GetType().Name} gains {value} health!");
+                        break;
+                    case 1: // Increase strength
+                        character.Strength += value;
+                        Console.WriteLine($"{character.GetType().Name} gains {value} strength!");
+                        break;
+                    case 2: // Increase luck
+                        character.Luck += value;
+                        Console.WriteLine($"{character.GetType().Name} gains {value} luck!");
+                        break;
+                }
+            }
+            else
+            {
+                // Negative outcomes (penalty)
+                int penaltyType = _random.Next(3); // 0: Health, 1: Strength, 2: Luck
+                switch (penaltyType)
+                {
+                    case 0: // Decrease health
+                        character.Health -= value;
+                        Console.WriteLine($"{character.GetType().Name} loses {value} health!");
+                        break;
+                    case 1: // Decrease strength
+                        character.Strength -= value;
+                        Console.WriteLine($"{character.GetType().Name} loses {value} strength!");
+                        break;
+                    case 2: // Decrease luck
+                        character.Luck -= value;
+                        Console.WriteLine($"{character.GetType().Name} loses {value} luck!");
+                        break;
+                }
             }
 
             // Ensure stats don't go below 0
